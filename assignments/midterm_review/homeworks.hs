@@ -118,3 +118,6 @@ mergesort xs = merge (mergesort left) (mergesort right)
 -- Q6 -- capitalize, only use higher order functions (map)
 capitalize :: [String] -> [String]
 capitalize = map (map toUpper)
+
+
+-- write a function that sorts a int list
