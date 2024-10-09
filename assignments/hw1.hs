@@ -1,3 +1,4 @@
+import GHC.Base (VecElem(Int16ElemRep))
 {-
 Name    : Daniel Nguyen
 UIN     : 831003833
@@ -62,4 +63,16 @@ polyCalcFactory coeffs x = evalPolyHelper coeffs x (length coeffs - 1)
 evalPolyHelper :: [Int] -> Int -> Int -> Int
 evalPolyHelper [] _ _ = 0
 evalPolyHelper (c:cs) x exp = c * x^exp + evalPolyHelper cs x (exp - 1)
+
+polyCalcFactory2 :: [Int] -> Int -> Int
+polyCalcFactory2 [] _ = 0
+polyCalcFactory2 (x:xs) n = sum (x:xs)
+  where
+    sum :: [Int] -> Int
+    sum [] = 0
+    sum (x:xs) = x * n ^ count xs + sum xs -- for each coefficient x, multiply x * n ^ count xs, where count xs is the length of the rest of the list
+    -- for example, 1x^2 , count is 2 because there are 2 elements in the list [1], n is the input, and x is the list of coefficients.
+    count :: [Int] -> Int
+    count [] = 0
+    count (y:ys) = length (y:ys)
 
