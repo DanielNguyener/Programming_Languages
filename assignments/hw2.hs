@@ -10,10 +10,10 @@ email   : danielnguyen@tamu.edu
 
 -- Q1 -- GCD
 -- putStrLn usage: ex9.hs (week3/code/code/ex9.hs)
-gcd' :: Int -> Int -> IO ()
+gcd' :: (Integral a) => a -> a -> a
 gcd' x y
-    | x < 0 || y < 0    = putStrLn "*** Exception: One of the inputs is negative."
-    | x == y            = print x
+    | x < 0 || y < 0    = error "One of the inputs is negative."
+    | x == y            = x
     | x > y             = gcd' (x-y) y
     | otherwise         = gcd' x (y-x)
 
