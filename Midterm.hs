@@ -11,6 +11,8 @@ a)
 
 
 -- b)
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use guards" #-}
 
 data Table = Table Int Int [[Double]]
     deriving (Show)
@@ -51,6 +53,12 @@ alternate :: (Show f1, Show f2) => (f1 -> Maybe a1) -> (f1 -> Maybe f2) -> f1 ->
 --         then myfilter xs a
 --     else myfilter xs
 
+myfilter :: (a -> Bool) -> [a] -> [a]
+myfilter _ [] = []  -- base case: empty list returns empty list
+myfilter pred (x:xs)
+    | pred x    = x : myfilter pred xs  -- include x if predicate is True
+    | otherwise = myfilter pred xs      -- otherwise skip x
+
 -- Q2
 data Tree a = Node a (Tree a) (Tree a)
     | Leaf a
@@ -64,7 +72,7 @@ data Tree a = Node a (Tree a) (Tree a)
 -- tree is allowed to be unbalanced
 
 insertValue :: (Ord a) => a -> Tree a -> Tree a
-insertValue x Empty = Node x Empty Empty -- base case
+insertValue x Nil = Node x Nil Nil -- base case
 insertValue x (Node value left right)
   | x < value = Node value (insertValue x left) right -- insert lef subtree
   | x > value = Node value left (insertValue x right) -- insert rght subtree
@@ -78,7 +86,7 @@ insertValue x (Node value left right)
     -- return nothing if value not found
 
 lookupTree :: (Ord a) => a -> Tree a -> Maybe (Tree a)
-lookupTree _ Empty = Nothing -- base case
+lookupTree _ Nil = Nothing -- base case
 lookupTree x (Node value left right)
     | x == value = Just (Node value left right)  -- found value
     | x < value  = lookupTree x left 
@@ -86,6 +94,7 @@ lookupTree x (Node value left right)
 
 
 -- Q3
+{- original code
 
 listAverage :: [Double] -> Either String Double
 listAverage a = listAverage' a []
@@ -100,16 +109,37 @@ listAverage a = listAverage' a []
             else if xs == [] -- if there are no more values to be scanned
                 then sum fromIntegral (acc) `div` fromIntegral(length acc)
             else acc ++ x
+-}
 
 
+-- corect using guards
+{-
 listAverage :: [Double] -> Either String Double
 listAverage a = listAverage' a []
   where
     listAverage' [] acc
-      | null acc = Left "No input" -- no valid inputs
+      | null acc  = Left "No valid inputs"  -- no valid inputs at all
       | otherwise = Right (sum acc / fromIntegral (length acc)) -- calculate average
 
     listAverage' (x:xs) acc
-      | x < 0 || x > 100 = Left "Invalid Data" -- outside range
-      | x == 999 = listAverage' [] acc -- stop scanning
-      | otherwise = listAverage' xs (acc ++ [x]) -- accumulate valid numbers
+      | x == 999  = listAverage' [] (x : acc)  -- include 999 and stop processing
+      | x < 0 || x > 100 = listAverage' xs acc -- skip invalid numbers, continue
+      | otherwise = listAverage' xs (x : acc)  -- accumulate valid numbers
+      -}
+
+
+-- corect using if else
+listAverage :: [Double] -> Either String Double
+listAverage a = listAverage' a []
+  where
+    listAverage' [] acc =
+      if null acc
+      then Left "No valid inputs"  -- no valid inputs at all
+      else Right (sum acc / fromIntegral (length acc))  -- calculate average
+
+    listAverage' (x:xs) acc =
+      if x == 999
+      then listAverage' [] (x : acc)  -- include 999 and stop processing
+      else if x < 0 || x > 100
+      then listAverage' xs acc  -- skip invalid numbers, continue
+      else listAverage' xs (x : acc)  -- accumulate valid numbers

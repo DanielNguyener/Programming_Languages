@@ -1,4 +1,3 @@
-import GHC.Base (VecElem(Int16ElemRep))
 {-
 Name    : Daniel Nguyen
 UIN     : 831003833
@@ -53,26 +52,11 @@ final (Scores _ _ _ finalScore) = finalScore
 
 -- Q6 -- total score calculation for grade
 totalPoints :: Scores -> Double
-totalPoints (Scores classAvg hwAvg midtermScore finalScore) = classAvg * 0.10 + hwAvg * 0.45 + midtermScore * 0.225 + finalScore * 0.225
+totalPoints (Scores classAvg hwAvg midtermScore finalScore) = classAvg * 0.05 + hwAvg * 0.45 + midtermScore * 0.25 + finalScore * 0.25
 
--- Q7 -- Polynomial calculator 
-polyCalcFactory :: [Int] -> Int -> Int
-polyCalcFactory coeffs x = evalPolyHelper coeffs x (length coeffs - 1)
-
--- Recursive helper function, takes in a list of coefficients, x, and the current exponent
-evalPolyHelper :: [Int] -> Int -> Int -> Int
-evalPolyHelper [] _ _ = 0
-evalPolyHelper (c:cs) x exp = c * x^exp + evalPolyHelper cs x (exp - 1)
-
-polyCalcFactory2 :: [Int] -> Int -> Int
-polyCalcFactory2 [] _ = 0
-polyCalcFactory2 (x:xs) n = sum (x:xs)
-  where
-    sum :: [Int] -> Int
-    sum [] = 0
-    sum (x:xs) = x * n ^ count xs + sum xs -- for each coefficient x, multiply x * n ^ count xs, where count xs is the length of the rest of the list
-    -- for example, 1x^2 , count is 2 because there are 2 elements in the list [1], n is the input, and x is the list of coefficients.
-    count :: [Int] -> Int
-    count [] = 0
-    count (y:ys) = length (y:ys)
+-- Q7 -- Polynomial calculator
+polyCalcFactory :: [Double] -> Double -> Double
+polyCalcFactory [] _ = 0
+polyCalcFactory (x:xs) n = x * n ^ count + polyCalcFactory xs n
+    where count = length xs
 
